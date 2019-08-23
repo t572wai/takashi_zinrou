@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="jp" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>人狼GM代行機</title>
+		<style>
+			.Dialog{
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>人狼GM代行機</h1>
+		<div id="drugs">
+
+		</div>
+		<script type="text/javascript" src="jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="./jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+		<link rel="stylesheet" href="jquery-ui-1.12.1.custom/jquery-ui.theme.css">
+		<!-- <script type="text/javascript" src="./Sortable-master/st/app.js"></script>-->
+		<script type="text/javascript">
+			let drugs = {
+				"citizen":"市民",
+				"werewolf":"人狼",
+				"fortuneTeller":"占い"
+			}
+
+			let camp = {
+				"citizen":"市民",
+				"werewolf":"人狼",
+				"fortuneTeller":"市民"
+			}
+
+			let playerNames = [
+
+			]
+
+			function showDrugs() {
+				let text = "合計人数<span id='player'></span>";
+				// console.log(drugs);
+				for (let drug in drugs) {
+					text += "<br>" + drugs[drug] + "<input type='number' value='0' class='numOfDrugs' id='numOf"+drug+"' min='0' oninput='playerCount()'>";
+				}
+					text += "<br><span id='playerName'></span>";
+
+				text+="<br><button type='button' onclick='startZinrou()'>開始</button>"
+				$('#drugs').html(text);
+				playerCount();
+			}
+
+			function playerCount() {
+				let sum = 0;
+				let text = '';
+				for (let drug in drugs) {
+					sum += parseInt($('#numOf'+drug).val());
+				}
+				for (var i = 0; i < sum ; i++) {
+					// console.log(i);
+					text += "<input type='text' value='"+GetPlayerName(i)+"' id='playerName"+i+"' oninput='playerNames["+i+"]=this.value'><br>";
+				}
+
+				$('#playerName').html(text);
+				$('#player').text(sum+"人");
+			}
+
+			function countCamp(c) {
+				let count=0;
+				for (let drug in drugs) {
+					if (c==camp[drug]) {
+						count+= parseInt($('#numOf'+drug).val());
+					}
+				}
+				console.log(count);
+				return count;
+			}
+
+			function startZinrou() {
+				if (countCamp("市民")==0) {
+					showDialog('エラー','市民陣営が0人です');
+				}else if (countCamp("人狼")==0) {
+					showDialog('エラー','人狼陣営が0人です');
+				}else {
+					showDialog('人狼GM','まず、'+playerNames[1]+'さんだけが見てください。')
+				}
+			}
+
+			function showDialog(title, text) {
+				$('#TempDialog').text(text);
+				$('#TempDialog').attr({"title":title});
+				$('#TempDialog').dialog({});
+			}
+
+			function GetPlayerName(i) {
+				if(playerNames[i]){
+					return playerNames[i];
+				}else {
+					return "プレイヤー"+parseInt(i+1);
+				}
+			}
+
+			showDrugs();
+		</script>
+		<div class="Dialog" id="TempDialog">
+		</div>
+	</body>
+</html>
